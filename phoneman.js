@@ -6,9 +6,9 @@ const connected = {}
 const sentResults = {}
 
 function _getFreePhone () {
-  const free = Object.keys(connected)[0]
-  if (free in sentResults) return null
-  return free
+  for (const i in connected) {
+    if (!(i in sentResults)) return i
+  }
 }
 
 function _trySend (data, resolve) {
