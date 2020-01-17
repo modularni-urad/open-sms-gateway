@@ -1,5 +1,5 @@
 # open-sms-gateway
-API server for SMS sending via android phones
+API server for SMS sending via android phones. [DEMO HERE](https://opensmsgw-test.herokuapp.com)
 
 ## API:
 - POST: data predavana pres query params: num, mess (viz. [sendreq.js](test/sendreq.js))
