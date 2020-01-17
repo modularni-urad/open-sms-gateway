@@ -4,7 +4,7 @@ API server for SMS sending via android phones. [DEMO HERE](https://opensmsgw-tes
 ## API:
 - POST: data predavana pres query params: num, mess (viz. [sendreq.js](test/sendreq.js))
 
-## server pro pripojeni android appek (AA)
+## server pro pripojeni [android appek (AA)](https://github.com/modularni-urad/open-sms-gateway-android)
 
 websocket (WS) komunikace pomoci zprav:
 -send: JSON: {num: tel cislo, message: zprava k odeslani}, 
