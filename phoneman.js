@@ -1,26 +1,31 @@
-const _ = require('underscore')
+// const _ = require('underscore')
 const Queue = require('./queue')
 
 const queue = Queue()
-const connected = []
+const connected = {}
 const sentResults = {}
 
-function _getFreeClient () {
-  return connected[0]
+function _getFreePhone () {
+  const free = Object.keys(connected)[0]
+  if (free in sentResults) return null
+  return free
 }
 
 function _trySend (data, resolve) {
-  const c = _getFreeClient()
-  if (!c) return null
-  c.emit('send', JSON.stringify(data))
-  sentResults[c] = resolve
-  return c
+  const free = _getFreePhone()
+  if (!free) return null
+  const socket = connected[free]
+  const dataStr = JSON.stringify(data)
+  socket.emit('send', dataStr)
+  console.log(`${free}: sending ${dataStr}`)
+  sentResults[free] = resolve
+  return socket
 }
 
 exports.sendSMS = function (data) {
   return new Promise((resolve, reject) => {
-    const c = _trySend(data, resolve)
-    if (!c) {
+    const socket = _trySend(data, resolve)
+    if (!socket) {
       queue.push({ data, resolve })
     }
   })
@@ -28,8 +33,10 @@ exports.sendSMS = function (data) {
 
 exports.onSendResult = function (socket, data) {
   try {
-    sentResults[socket](data)
-    delete sentResults[socket]
+    const num = socket.handshake.query.num
+    console.log(`${num}: receiving ${data}`)
+    sentResults[num](data)
+    delete sentResults[num]
   } catch (err) {
     console.log(err)
   }
@@ -41,9 +48,11 @@ exports.onSendResult = function (socket, data) {
 }
 
 exports.addClient = function (socket) {
-  connected.push(socket)
+  const num = socket.handshake.query.num
+  connected[num] = socket
 }
 
 exports.removeClient = function (socket) {
-  connected.splice(_.indexOf(socket))
+  const num = socket.handshake.query.num
+  delete connected[num]
 }

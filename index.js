@@ -11,14 +11,23 @@ app.post('/', (req, res) => {
 })
 
 io.on('connection', (socket) => {
-  Phone.addClient(socket)
-  console.log('a user connected: ' + socket.handshake.query.num)
+  const num = socket.handshake.query.num
+  // check if the client provides appropriate query
+  if (num && num.match(/[0-9]{9}/g)) {
+    Phone.addClient(socket)
+    console.log('a user connected: ' + num)
+  } else {
+    console.log('wrong num, disconnected: ' + num)
+    socket.disconnect(true)
+    return
+  }
 
   socket.on('send_result', (data) => {
     Phone.onSendResult(socket, data)
   })
   socket.on('disconnect', (reason) => {
     Phone.removeClient.bind(socket, reason)
+    console.log('a user disconnected: ' + socket.handshake.query.num)
   })
   socket.on('error', (error) => {
     console.log('error: ' + error)
