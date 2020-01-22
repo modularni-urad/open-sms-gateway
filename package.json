@@ -10,7 +10,7 @@
   "author": "Vaclav Klecanda <vencax77@gmail.com> (http://vxk.cz)",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.14.1",
+    "express": "^4.17.1",
     "socket.io": "^2.3.0",
     "underscore": "^1.9.2"
   },
