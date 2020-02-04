@@ -1,6 +1,7 @@
 const app = require('express')()
 const server = require('http').createServer(app)
-var io = require('socket.io')(server)
+const engine = require('engine.io')
+const wsserver = engine.attach(server)
 const PORT = process.env.PORT || 3000
 const Phone = require('./phoneman')
 
@@ -10,7 +11,7 @@ app.post('/', (req, res) => {
   })
 })
 
-io.on('connection', (socket) => {
+wsserver.on('connection', socket => {
   const num = socket.handshake.query.num
   // check if the client provides appropriate query
   if (num && num.match(/[0-9]{9}/g)) {
@@ -22,10 +23,10 @@ io.on('connection', (socket) => {
     return
   }
 
-  socket.on('send_result', (data) => {
+  socket.on('message', (data) => {
     Phone.onSendResult(socket, data)
   })
-  socket.on('disconnect', (reason) => {
+  socket.on('close', (reason) => {
     const num = socket.handshake.query.num
     Phone.removeClient.bind(num)
     console.log(`${num} disconnected. Reason: ${reason}`)
