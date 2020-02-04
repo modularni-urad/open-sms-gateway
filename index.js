@@ -26,8 +26,9 @@ io.on('connection', (socket) => {
     Phone.onSendResult(socket, data)
   })
   socket.on('disconnect', (reason) => {
-    Phone.removeClient.bind(socket, reason)
-    console.log('a user disconnected: ' + socket.handshake.query.num)
+    const num = socket.handshake.query.num
+    Phone.removeClient.bind(num)
+    console.log(`${num} disconnected. Reason: ${reason}`)
   })
   socket.on('error', (error) => {
     console.log('error: ' + error)

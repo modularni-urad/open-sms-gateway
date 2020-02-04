@@ -26,7 +26,7 @@ exports.sendSMS = function (data) {
   return new Promise((resolve, reject) => {
     const socket = _trySend(data, resolve)
     if (!socket) {
-      queue.push({ data, resolve })
+      queue.push({ data, resolve, reject })
     }
   })
 }
@@ -50,9 +50,10 @@ exports.onSendResult = function (socket, data) {
 exports.addClient = function (socket) {
   const num = socket.handshake.query.num
   connected[num] = socket
+  console.log(Object.keys(connected))
 }
 
-exports.removeClient = function (socket) {
-  const num = socket.handshake.query.num
+exports.removeClient = function (num) {
   delete connected[num]
+  console.log(Object.keys(connected))
 }
