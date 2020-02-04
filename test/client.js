@@ -1,11 +1,17 @@
-const io = require('socket.io-client')
+const eio = require('engine.io-client')
 
 const num = Math.random().toString().slice(2, 11)
-const socket = io(`http://localhost:3000/?num=${num}`)
+const socket = eio(`http://localhost:3000/?num=${num}`)
 
-socket.on('send', function (msg) {
-  console.log(`incomming: ${msg}`)
-  setTimeout(() => {
-    socket.emit('send_result', 'ok')
-  }, 2000)
+socket.on('open', function () {
+  socket.on('message', function (data) {
+    console.log(`incomming: ${data}`)
+    setTimeout(() => {
+      socket.send('ok')
+    }, 2000)
+  })
+
+  socket.on('close', function () {
+    console.log('closing')
+  })
 })
