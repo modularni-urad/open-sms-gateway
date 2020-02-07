@@ -15,8 +15,8 @@ function _trySend (data, resolve) {
   const free = _getFreePhone()
   if (!free) return null
   const socket = connected[free]
-  const dataStr = JSON.stringify(data)
-  socket.emit('send', dataStr)
+  const dataStr = JSON.stringify(Object.assign({ typ: 'sendsms' }, data))
+  socket.send(dataStr)
   console.log(`${free}: sending ${dataStr}`)
   sentResults[free] = resolve
   return socket
@@ -31,9 +31,8 @@ exports.sendSMS = function (data) {
   })
 }
 
-exports.onSendResult = function (socket, data) {
+exports.onSendResult = function (num, socket, data) {
   try {
-    const num = socket.handshake.query.num
     console.log(`${num}: receiving ${data}`)
     sentResults[num](data)
     delete sentResults[num]
@@ -47,8 +46,7 @@ exports.onSendResult = function (socket, data) {
   }
 }
 
-exports.addClient = function (socket) {
-  const num = socket.handshake.query.num
+exports.addClient = function (num, socket) {
   connected[num] = socket
   console.log(Object.keys(connected))
 }

@@ -8,8 +8,8 @@ Client application is [open-sms-gateway-android](https://github.com/modularni-ur
 ## server pro pripojeni [android appek (AA)](https://github.com/modularni-urad/open-sms-gateway-android)
 
 websocket (WS) komunikace pomoci zprav:
--send: JSON: {num: tel cislo, message: zprava k odeslani},
-reakce zprava od AA send_result (viz. [client.js](test/client.js)) s obsahem "ok" kdyz SMS odeslana, jinak duvod failu.
+JSON: {typ: 'sendsms', num: tel cislo, message: zprava k odeslani},
+reakce zprava od AA (viz. [client.js](test/client.js)) s obsahem "ok" kdyz SMS odeslana, jinak duvod failu v JSON.
 
 ## NGINX conf
 

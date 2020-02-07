@@ -1,6 +1,7 @@
 const app = require('express')()
 const server = require('http').createServer(app)
-var io = require('socket.io')(server)
+const engine = require('engine.io')
+const wsserver = engine.attach(server)
 const PORT = process.env.PORT || 3000
 const Phone = require('./phoneman')
 
@@ -10,29 +11,29 @@ app.post('/', (req, res) => {
   })
 })
 
-io.on('connection', (socket) => {
-  const num = socket.handshake.query.num
+wsserver.on('connection', socket => {
+  const num = socket.request._query.num
   // check if the client provides appropriate query
   if (num && num.match(/[0-9]{9}/g)) {
-    Phone.addClient(socket)
     console.log('a user connected: ' + num)
+    Phone.addClient(num, socket)
   } else {
     console.log('wrong num, disconnected: ' + num)
-    socket.disconnect(true)
+    socket.close(true)
     return
   }
 
-  socket.on('send_result', (data) => {
-    Phone.onSendResult(socket, data)
+  socket.on('message', (data) => {
+    Phone.onSendResult(socket.request._query.num, socket, data)
   })
-  socket.on('disconnect', (reason) => {
-    const num = socket.handshake.query.num
-    Phone.removeClient.bind(num)
+  socket.on('close', (reason) => {
+    const num = socket.request._query.num
     console.log(`${num} disconnected. Reason: ${reason}`)
+    Phone.removeClient(num)
   })
   socket.on('error', (error) => {
     console.log('error: ' + error)
-    Phone.removeClient.bind(socket, error)
+    Phone.removeClient(socket.request._query.num)
   })
 })
 
